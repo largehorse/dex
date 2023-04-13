@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"encoding/xml"
-	"errors"
+        "github.com/pkg/errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -15,7 +15,6 @@ import (
 
 	"github.com/beevik/etree"
 	xrv "github.com/mattermost/xml-roundtrip-validator"
-	"github.com/pkg/errors"
 	"github.com/dexidp/dex/connector"
 	"github.com/dexidp/dex/pkg/log"
 	dsig "github.com/russellhaering/goxmldsig"
