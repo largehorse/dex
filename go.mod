@@ -19,8 +19,8 @@ require (
 	github.com/golang/protobuf v0.0.0-20171113180720-1e59b77b52bf
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
 	github.com/gorilla/context v0.0.0-20160525203319-aed02d124ae4 // indirect
-	github.com/gorilla/handlers v0.0.0-20161206055144-3a5767ca75ec
-	github.com/gorilla/mux v0.0.0-20160605233521-9fa818a44c2b
+	github.com/gorilla/handlers v1.5.1
+        github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v0.0.0-20170826090648-0dafe0d496ea
 	github.com/grpc-ecosystem/grpc-gateway v1.5.1 // indirect
 	github.com/gtank/cryptopasta v0.0.0-20160720052843-e7e23673cac3
@@ -29,7 +29,9 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kylelemons/godebug v0.0.0-20160406211939-eadb3ce320cb
 	github.com/lib/pq v0.0.0-20181016162627-9eb73efc1fcc
+        github.com/mattermost/xml-roundtrip-validator v0.0.0-20201204154048-1a8688af4cf1
 	github.com/mattn/go-sqlite3 v0.0.0-20160907162043-3fb7a0e792ed
+        github.com/pkg/errors v0.9.1
 	github.com/matttproud/golang_protobuf_extensions v0.0.0-20150406173934-fc2b8d3a73c4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pquerna/cachecontrol v0.0.0-20160421231612-c97913dcbd76 // indirect
