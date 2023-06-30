@@ -367,6 +367,7 @@ func (s *Server) handlePasswordLogin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if !ok {
+			s.logger.Errorf("Failed to login user: %v. Rendering template", err)
 			if err := s.templates.password(r, w, r.URL.String(), username, usernamePrompt(pwConn), true, backLink); err != nil {
 				s.logger.Errorf("Server template error: %v", err)
 			}
@@ -1139,6 +1140,7 @@ func (s *Server) handlePasswordGrant(w http.ResponseWriter, r *http.Request, cli
 		return
 	}
 	if !ok {
+		s.logger.Errorf("Failed to login user: %v. Rendering template", err)
 		s.tokenErrHelper(w, errAccessDenied, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
@@ -1327,6 +1329,7 @@ func (s *Server) writeAccessToken(w http.ResponseWriter, resp *accessTokenRespon
 }
 
 func (s *Server) renderError(w http.ResponseWriter, status int, description string, errors ...string) {
+	s.logger.Errorf("renderError: description: %s", description)
 	resp := struct {
 		ErrorMessage string `json:"error"`
 		ErrorDetails string `json:"error_description,omitempty"`
@@ -1347,6 +1350,7 @@ func (s *Server) renderError(w http.ResponseWriter, status int, description stri
 }
 
 func (s *Server) tokenErrHelper(w http.ResponseWriter, typ string, description string, statusCode int) {
+	s.logger.Errorf("tokenErrHelper: error: %s, description: %s", typ, description)
 	if err := tokenErr(w, typ, description, statusCode); err != nil {
 		s.logger.Errorf("token error response: %v", err)
 	}

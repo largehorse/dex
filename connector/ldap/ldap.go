@@ -484,7 +484,7 @@ func (c *ldapConnector) Login(ctx context.Context, s connector.Scopes, username,
 			if ldapErr, ok := err.(*ldap.Error); ok {
 				switch ldapErr.ResultCode {
 				case ldap.LDAPResultInvalidCredentials:
-					c.logger.Errorf("ldap: invalid password for user %q", user.DN)
+					c.logger.Errorf("LDAP: invalid password for user %q", user.DN)
 					incorrectPass = true
 					return fmt.Errorf("invalid credentials for user %q LDAP Result Code %d %q: ", user.DN,
 						ldap.LDAPResultInvalidCredentials, ldap.LDAPResultCodeMap[ldap.LDAPResultInvalidCredentials])
@@ -499,9 +499,11 @@ func (c *ldapConnector) Login(ctx context.Context, s connector.Scopes, username,
 		return nil
 	})
 	if err != nil {
+		c.logger.Errorf("Returning error: %s", err.Error())
 		return connector.Identity{}, false, err
 	}
 	if incorrectPass {
+		c.logger.Errorf("Incorrect pwd error: %#v", err)
 		return connector.Identity{}, false, nil
 	}
 
