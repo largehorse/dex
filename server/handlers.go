@@ -1135,7 +1135,7 @@ func (s *Server) handlePasswordGrant(w http.ResponseWriter, r *http.Request, cli
 	identity, ok, err := passwordConnector.Login(r.Context(), parseScopes(scopes), username, password)
 	if err != nil {
 		s.logger.Errorf("Failed to login user: %v", err)
-		s.tokenErrHelper(w, errInvalidRequest, "Could not login user", http.StatusBadRequest)
+		s.tokenErrHelper(w, errInvalidRequest, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !ok {
@@ -1326,10 +1326,24 @@ func (s *Server) writeAccessToken(w http.ResponseWriter, resp *accessTokenRespon
 	w.Write(data)
 }
 
-func (s *Server) renderError(r *http.Request, w http.ResponseWriter, status int, description string) {
-	if err := s.templates.err(r, w, status, description); err != nil {
-		s.logger.Errorf("Server template error: %v", err)
+func (s *Server) renderError(w http.ResponseWriter, status int, description string, errors ...string) {
+	resp := struct {
+		ErrorMessage string `json:"error"`
+		ErrorDetails string `json:"error_description,omitempty"`
+	}{
+		description,
+		strings.Join(errors, ", "),
 	}
+	data, err := json.Marshal(resp)
+	if err != nil {
+		s.logger.Errorf("failed to render error: %v", err)
+		s.tokenErrHelper(w, errServerError, "", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+	w.WriteHeader(status)
+	w.Write(data)
 }
 
 func (s *Server) tokenErrHelper(w http.ResponseWriter, typ string, description string, statusCode int) {
