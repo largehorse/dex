@@ -362,12 +362,12 @@ func (s *Server) handlePasswordLogin(w http.ResponseWriter, r *http.Request) {
 
 		identity, ok, err := pwConn.Login(r.Context(), scopes, username, password)
 		if err != nil {
-			s.logger.Errorf("Failed to login user: %v", err)
-			s.renderError(r, w, http.StatusInternalServerError, fmt.Sprintf("Login error: %v", err))
+			s.logger.Errorf("Failed to login the user: %v", err)
+			s.renderError(r, w, http.StatusInternalServerError, fmt.Sprintf("Login error: %v", err), err.Error())
 			return
 		}
 		if !ok {
-			s.logger.Errorf("Failed to login user: %v. Rendering template", err)
+			s.logger.Errorf("Failed to login the user: %v. Rendering template", err)
 			if err := s.templates.password(r, w, r.URL.String(), username, usernamePrompt(pwConn), true, backLink); err != nil {
 				s.logger.Errorf("Server template error: %v", err)
 			}
@@ -1135,12 +1135,12 @@ func (s *Server) handlePasswordGrant(w http.ResponseWriter, r *http.Request, cli
 	password := q.Get("password")
 	identity, ok, err := passwordConnector.Login(r.Context(), parseScopes(scopes), username, password)
 	if err != nil {
-		s.logger.Errorf("Failed to login user: %v", err)
+		s.logger.Errorf("Failed to login user tokenerr: %v", err)
 		s.tokenErrHelper(w, errInvalidRequest, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !ok {
-		s.logger.Errorf("Failed to login user: %v. Rendering template", err)
+		s.logger.Errorf("Failed to login user tokenerr: %v. Rendering template", err)
 		s.tokenErrHelper(w, errAccessDenied, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
@@ -1328,7 +1328,10 @@ func (s *Server) writeAccessToken(w http.ResponseWriter, resp *accessTokenRespon
 	w.Write(data)
 }
 
-func (s *Server) renderError(w http.ResponseWriter, status int, description string, errors ...string) {
+func (s *Server) renderError(r *http.Request, w http.ResponseWriter, status int, description string, errors ...string) {
+	if r == nil {
+		return
+	}
 	s.logger.Errorf("renderError: description: %s", description)
 	resp := struct {
 		ErrorMessage string `json:"error"`
