@@ -362,7 +362,7 @@ func (s *Server) handlePasswordLogin(w http.ResponseWriter, r *http.Request) {
 
 		identity, ok, err := pwConn.Login(r.Context(), scopes, username, password)
 		if err != nil {
-			s.logger.Errorf("Failed to login the user: %v", err)
+			s.logger.Errorf("Failed to login the user. Rendering error: %v", err)
 			s.renderError(r, w, http.StatusInternalServerError, fmt.Sprintf("Login error: %v", err))
 			return
 		}
