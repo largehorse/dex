@@ -362,8 +362,8 @@ func (s *Server) handlePasswordLogin(w http.ResponseWriter, r *http.Request) {
 
 		identity, ok, err := pwConn.Login(r.Context(), scopes, username, password)
 		if err != nil {
-			s.logger.Errorf("Failed to login the user. Rendering error: %v", err)
-			s.renderError(r, w, http.StatusInternalServerError, fmt.Sprintf("Login error: %v", err))
+			s.logger.Errorf("Failed to login user: %v", err)
+			s.renderError(r, w, http.StatusInternalServerError, fmt.Sprintf("Login error: %v", err), err.Error())
 			return
 		}
 		if !ok {
@@ -1328,18 +1328,11 @@ func (s *Server) writeAccessToken(w http.ResponseWriter, resp *accessTokenRespon
 	w.Write(data)
 }
 
-func (s *Server) renderError(r *http.Request, w http.ResponseWriter, status int, description string) {
-	if r == nil {
-		return
-	}
-	s.logger.Errorf("renderError redirecting to tekenerror: description: %s", description)
-
-	if err := tokenErr(w, errAccessDenied, description, status); err != nil {
-		s.logger.Errorf("token error response: %v", err)
-	}
-	/*resp := struct {
-		ErrorMessage string `json:"error"`
-		ErrorDetails string `json:"error_description,omitempty"`
+func (s *Server) renderError(r *http.Request, w http.ResponseWriter, status int, description string, errors ...string) {
+	// Write json based errors instead of using the template to render error.
+	resp := struct {
+		ErrorMessage string `json:"errorMsg"`
+		ErrorDetails string `json:"errorDetails"`
 	}{
 		description,
 		strings.Join(errors, ", "),
@@ -1353,7 +1346,7 @@ func (s *Server) renderError(r *http.Request, w http.ResponseWriter, status int,
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 	w.WriteHeader(status)
-	w.Write(data)*/
+	w.Write(data)
 }
 
 func (s *Server) tokenErrHelper(w http.ResponseWriter, typ string, description string, statusCode int) {
