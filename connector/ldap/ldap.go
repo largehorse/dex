@@ -614,6 +614,7 @@ func (c *ldapConnector) groups(ctx context.Context, user ldap.Entry) ([]string, 
 		return nil, nil
 	}
 
+	c.logger.Infof("asdf groups")
 	var groups []*ldap.Entry
 	var groupNames []string
 	for _, matcher := range c.GroupSearch.UserMatchers {
