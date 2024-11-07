@@ -7,10 +7,11 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"github.com/go-ldap/ldap/v3"
 	"net"
 	"os"
 	"strings"
+
+	"github.com/go-ldap/ldap/v3"
 
 	"github.com/dexidp/dex/connector"
 	"github.com/dexidp/dex/pkg/log"
@@ -706,6 +707,14 @@ func (c *ldapConnector) queryGroups(ctx context.Context, memberAttr string, dn s
 			req.BaseDN, scopeString(req.Scope), req.Filter)
 		resp, err := conn.Search(req)
 		if err != nil {
+			ldapErr1, ok1 := err.(*ldap.Error)
+			c.logger.Infof("asdf1 %v, %v", ldapErr1.ResultCode, ok1)
+			c.logger.Infof("asdf1 nosuch object %v", ldap.LDAPResultNoSuchObject)
+			if ldapErr, ok := err.(*ldap.Error); ok && ldapErr.ResultCode == ldap.LDAPResultNoSuchObject {
+				c.logger.Infof("asdf2")
+				c.logger.Infof("ldap: groups search with filter %q returned no groups", filter)
+				return nil
+			}
 			return fmt.Errorf("ldap: search failed: %v", err)
 		}
 		groups = append(groups, resp.Entries...)
