@@ -465,7 +465,6 @@ func (c *ldapConnector) userEntry(conn *ldap.Conn, username string) (user ldap.E
 		req.Attributes = append(req.Attributes, c.UserSearch.PreferredUsernameAttrAttr)
 	}
 
-	c.logger.Infof("asdf testing")
 	c.logger.Infof("performing ldap search %s %s %s",
 		req.BaseDN, scopeString(req.Scope), req.Filter)
 	resp, err := conn.Search(req)
@@ -615,7 +614,6 @@ func (c *ldapConnector) groups(ctx context.Context, user ldap.Entry) ([]string, 
 		return nil, nil
 	}
 
-	c.logger.Infof("asdf groups")
 	var groups []*ldap.Entry
 	var groupNames []string
 	for _, matcher := range c.GroupSearch.UserMatchers {
@@ -709,11 +707,7 @@ func (c *ldapConnector) queryGroups(ctx context.Context, memberAttr string, dn s
 			req.BaseDN, scopeString(req.Scope), req.Filter)
 		resp, err := conn.Search(req)
 		if err != nil {
-			ldapErr1, ok1 := err.(*ldap.Error)
-			c.logger.Infof("asdf1 %v, %v", ldapErr1.ResultCode, ok1)
-			c.logger.Infof("asdf1 nosuch object %v", ldap.LDAPResultNoSuchObject)
 			if ldapErr, ok := err.(*ldap.Error); ok && ldapErr.ResultCode == ldap.LDAPResultNoSuchObject {
-				c.logger.Infof("asdf2")
 				c.logger.Infof("ldap: groups search with filter %q returned no groups", filter)
 				return nil
 			}
